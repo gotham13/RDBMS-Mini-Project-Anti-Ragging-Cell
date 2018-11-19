@@ -1,6 +1,11 @@
 # S5 RDBMS MINI PROJECT
 ## ANTI RAGGING CELL
 
+## Teammates
+* [Abhinav Gautam](https://github.com/Gotham13121997)
+* [Dhanish Kumar](https://github.com/imdhanish)
+* Alok Shubham
+
 ## STUFF USED
 * Node.js
 * Mysql
