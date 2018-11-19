@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Standard Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="icon" href="../images/stop_ragging (1).png">
+    <!-- Site Properties -->
+    <title>complaint</title>
+    <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.css">
+
+    <style type="text/css">
+
+        .hidden.menu {
+            display: none;
+        }
+
+        .masthead.segment {
+            min-height: 700px;
+            padding: 1em 0em;
+        }
+        .masthead .logo.item img {
+            margin-right: 1em;
+        }
+        .masthead .ui.menu .ui.button {
+            margin-left: 0.5em;
+        }
+        .masthead h1.ui.header {
+            margin-top: 3em;
+            margin-bottom: 0em;
+            font-size: 4em;
+            font-weight: normal;
+        }
+        .masthead h2 {
+            font-size: 1.7em;
+            font-weight: normal;
+        }
+
+        .ui.vertical.str {
+            padding: 8em 0em;
+        }
+        .ui.vertical.str h3 {
+            font-size: 2em;
+        }
+        .ui.vertical.str .button + h3,
+        .ui.vertical.str p + h3 {
+            margin-top: 3em;
+        }
+        .ui.vertical.str .floated.image {
+            clear: both;
+        }
+        .ui.vertical.str p {
+            font-size: 1.33em;
+        }
+        .ui.vertical.str .horizontal.divider {
+            margin: 3em 0em;
+        }
+
+        .quote.str.segment {
+            padding: 0em;
+        }
+        .quote.str.segment .grid .column {
+            padding-top: 5em;
+            padding-bottom: 5em;
+        }
+
+        .footer.segment {
+            padding: 5em 0em;
+        }
+
+        .secondary.ptg.menu .toc.item {
+            display: none;
+        }
+
+        @media only screen and (max-width: 700px) {
+            .ui.fixed.menu {
+                display: none !important;
+            }
+            .secondary.ptg.menu .item,
+            .secondary.ptg.menu .menu {
+                display: none;
+            }
+            .secondary.ptg.menu .toc.item {
+                display: block;
+            }
+            .masthead.segment {
+                min-height: 350px;
+            }
+            .masthead h1.ui.header {
+                font-size: 2em;
+                margin-top: 1.5em;
+            }
+            .masthead h2 {
+                margin-top: 0.5em;
+                font-size: 1.5em;
+            }
+        }
+
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/semantic/dist/semantic.js"></script>
+    <script src="../sweetalert2.all.js"></script>
+    <script>
+        function new_log() {
+            swal({
+                title: 'Create Log',
+                html: `<div class="ui form">
+    <div class="fluid field" style="max-height: 400px;overflow-y: auto;">
+     <textarea id="content"></textarea>
+    </div>
+</div>`,
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    let content = document.getElementById('content').value;
+                    return new Promise((resolve) => {
+                            $.post(
+                                "/dashboard/create_log",
+                                { table: "log"+<%=id%>,
+                                    content:content
+                                },
+                                function(data) {
+                                    if(data.success)
+                                    {
+                                        swal({
+                                            type: "success",
+                                            title: "log added",
+                                            confirmButtonColor: '#d33'
+                                        });
+                                        get_logs();
+                                    }
+                                    else
+                                    {
+                                        swal({
+                                            type: "error",
+                                            title: "some error occured",
+                                            confirmButtonColor: '#d33'
+                                        });
+                                    }
+                                }
+                            );
+                    });
+                },
+                allowOutsideClick: () => !swal.isLoading()
+            });
+        }
+
+        function get_logs() {
+            $.post(
+                "/dashboard/log",
+                { table: "log"+<%=id%> },
+                function(data) {
+                    var log_val = ``
+                    for (let d of data) {
+                        var date = new Date(d.timestamp);
+                        var str = `
+                            <div class="ui segment">
+                                <div class="ui comments">
+  <div class="comment">
+    <div class="content">
+      <div class="author">Name: ${d.name}</div>
+      <div class="text">
+        ${d.data}
+      </div>
+      </div>
+      <div class="actions">
+      `;
+                        if(d.volunteer_or_admin==1)
+                        {
+                            str = str +`
+        <div class="v_o_a">Admin</div>`;
+                        }
+                        else
+                        {
+                            str=str+`
+        <div class="v_o_a">Volunteer</div>`;
+                        }
+                        log_val = log_val +str+`
+        <div class="date">Date: ${date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear()}</div>
+        <div class="time">Time: ${date.getHours()+":"+date.getMinutes()}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+`
+                    }
+                    $("#segment_loader").attr("class","ui inverted inactive loader");
+                    $("#logs").html(log_val);
+                }
+            );
+        }
+        $(document)
+            .ready(function() {
+
+                get_logs();
+                // fix menu when passed
+                $('.masthead')
+                    .visibility({
+                        once: false,
+                        onBottomPassed: function () {
+                            $('.fixed.menu').transition('fade in');
+                        },
+                        onBottomPassedReverse: function () {
+                            $('.fixed.menu').transition('fade out');
+                        }
+                    })
+                ;
+
+                // create sidebar and attach to menu open
+                $('.ui.sidebar')
+                    .sidebar('attach events', '.toc.item')
+                ;
+            });
+    </script>
+</head>
+<body>
+
+<!-- Following Menu -->
+<div class="ui large top fixed hidden menu">
+    <div class="ui container">
+        <div class="item">
+            <div class="image">
+                <img src="../images/stop_ragging (2).png">
+            </div>
+        </div>
+        <a class="item" href="../dashboard" >Dashboard</a>
+    </div>
+</div>
+
+<!-- Sidebar Menu -->
+<div class="ui vertical sidebar menu">
+    <div class="item">
+        <div class="image">
+            <img src="../images/stop_ragging.png">
+        </div>
+    </div>
+    <a class="active item" href="../dashboard">Dashboard</a>
+</div>
+<div class="pusher">
+    <div class="ui vertical masthead segment basic">
+        <div class="ui container">
+            <div class="ui large secondary ptg menu">
+                <a class="toc item">
+                    <i class="sidebar icon"></i>
+                </a>
+                <a class="item" href="..">
+                    <div class="image">
+                        <img src="../images/stop_ragging (1).png">
+                    </div>
+                </a>
+                    <a class="active item" href="../dashboard">Dashboard</a>
+                <a class="right floated item">
+                    <div class="image">
+                        <img src="../images/logo (1).png">
+                    </div>
+                </a>
+            </div>
+            <div class="ui form" id="forma">
+                <h2>Status: <% if(status==0) {%>
+                    Pending
+                    <%}else if(status==1) {%>
+                    Resolved
+                    <%}else {%>
+                    Discarded
+                    <%}%>
+                </h2>
+                <div class="field">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Complainant Name</label>
+                            <input type="text" readonly name="complainant" value="<%=complainant%>" placeholder="Complainant Name">
+                        </div>
+                        <div class="field">
+                            <label>Victim Name</label>
+                            <input type="text" readonly name="victim" value="<%=victim%>" placeholder="Victim Name">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Email</label>
+                            <input type="email" readonly name="email" value="<%=email%>" placeholder="Email">
+                        </div>
+                        <div class="field">
+                            <label>Mobile No.</label>
+                            <input type="Number" readonly name="mobile" value="<%=mobile%>" placeholder="Mobile No.">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Address</label>
+                            <input type="text" readonly name="Address" value="<%=address%>" placeholder="Address">
+                        </div>
+                        <div class="field">
+                            <label>Pincode</label>
+                            <input type="Number" readonly  name="Pincode" value="<%=pincode%>" placeholder="Pincode">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Ragging Details
+                        </label>
+                        <textarea  readonly name="Details" ><%=details%></textarea>
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="fluid field">
+                        <h4>Location</h4>
+                    </div>
+                    <div class="fluid field">
+                        <label>Latitude</label>
+                        <input type="text" id="Latitude" value="<%=latitude%>" readonly name="Latitude" value="">
+                    </div>
+                    <div class="fluid field">
+                        <label>Longitude</label>
+                        <input type="text" id="Longitude" value="<%=longitude%>" readonly name="Longitude" value="">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Attachments</label>
+                </div>
+                <div class="two fields">
+                    <div class="field">
+                        <label>Attachment 1: </label><a href="<%if(attachment1!==""){%>/file_upload/<%=attachment1%><%}else{%><%}%>"><%=attachment1%></a>
+                    </div>
+                    <div class="field">
+                        <label>Attachment 2: </label><a href="<%if(attachment2!==""){%>/file_upload/<%=attachment2%><%}else{%><%}%>"><%=attachment2%></a>
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <h2>Logs</h2>
+                <div class="ui segment" style="overflow: auto;min-height: 300px;" id="logs">
+                    <div class="ui inverted active dimmer" id="segment_loader"  >
+                        <div class="ui text loader">Loading</div>
+                    </div>
+                </div>
+                <button class="ui red button" onclick="new_log()">Add Log</button>
+            </div>
+            <center>
+                <form class="ui form" method="get" action="complaint_view">
+                    <input type="text" name="im" value="<%=id%>" hidden>
+                    <div class="ui three fields">
+                        <div class="ui field"></div>
+                    <div class="ui field">
+                <select name="mark">
+                    <% if(status==0) {%>
+                    <option value="1" >Mark Resolved</option>
+                    <option value="-1" >Mark Discarded</option>
+                    <%}else if(status==1) {%>
+                    <option value="0">Mark Pending</option>
+                    <option value="-1">Mark Discarded</option>
+                    <%}else {%>
+                    <option value="0" >Mark Pending</option>
+                    <option value="1">Mark Resolved</option>
+                    <%}%>
+                </select>
+                    </div>
+                        <div class="ui field"></div>
+                    </div>
+                    <div class="ui field">
+                        <input type="submit" class="ui red button">
+                    </div>
+                </form>
+            </center>
+        </div>
+    </div>
+</div>
+</body>
+</html>

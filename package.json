@@ -1,0 +1,23 @@
+{
+  "name": "antiragging",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "express-busboy": "^7.0.0",
+    "express-fileupload": "^1.0.0",
+    "express-myconnection": "^1.0.4",
+    "express-session": "^1.15.6",
+    "http-errors": "~1.6.2",
+    "morgan": "~1.9.0",
+    "mysql": "^2.16.0",
+    "semantic-ui": "^2.4.0",
+    "sweetalert2": "^7.29.0"
+  }
+}
