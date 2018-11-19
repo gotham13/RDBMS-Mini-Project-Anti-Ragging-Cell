@@ -11,6 +11,7 @@
 * Mysql
 * Express.js
 * Semantic UI
+* Ajax
 * Ejs
 * Jquery
 
