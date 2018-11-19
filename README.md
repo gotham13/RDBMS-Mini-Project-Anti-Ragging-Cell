@@ -24,7 +24,7 @@
 * Install Node js
 * Install Mysql and create the database anti_ragging
 * Clone this project
-* Import tables from antiragging.sql file in tables folder
+* Import tables from antiragging.sql file in db folder
 * Go to project directory and run npm install in terminal
 * Start the mysql server
 * Go to project directory and run npm start in terminal
