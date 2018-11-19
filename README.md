@@ -20,6 +20,16 @@
 * Volunteer Management
 * Complaint Logging and management
 
+## How To Run
+* Install Node js
+* Install Mysql and create the database anti_ragging
+* Clone this project
+* Import tables from antiragging.sql file in tables folder
+* Go to project directory and run npm install in terminal
+* Start the mysql server
+* Go to project directory and run npm start in terminal
+* Open localhost:3000 in browser
+
 ## DIAGRAMS
 ### 0 LEVEL Data Flow Diagram
 ![alt text](https://github.com/Gotham13121997/RDBMS-Mini-Project-Anti-Ragging-Cell/blob/master/diagrams/dfd0.jpg)  
